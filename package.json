@@ -1,0 +1,18 @@
+{
+  "name": "g-dawg-translator",
+  "version": "1.0.0",
+  "description": "English \u2194 Thai translator with multiple styles (Literal, Natural, Creative, Joking, Romantic)",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Open index.html in your browser'",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [
+    "translator",
+    "thai",
+    "english",
+    "netlify"
+  ],
+  "author": "G-Dawg",
+  "license": "MIT"
+}

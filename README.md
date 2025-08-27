@@ -1,21 +1,19 @@
-# G-Dawg Translator (English ↔ Thai)
+# G-Dawg Translator
 
-A playful but high-quality translator with multiple modes:  
-**Literal, Natural, Creative, Joking, Romantic**.  
-Includes **speaker gender toggle** and **per-card Copy + Speak buttons**.
+A fun English ↔ Thai translator app with multiple modes (Literal, Natural, Creative, Joking, Romantic).
 
-🚀 Deployable on **Netlify** with serverless functions.
+## 🚀 Deploy on Netlify
 
-## Setup
-1. Drag & drop this folder into GitHub repo.  
-2. Connect repo to Netlify.  
-3. Add your `OPENAI_API_KEY` in Netlify → Site settings → Environment variables.  
+1. Drag & drop this repo into a new GitHub repository.
+2. Connect repo to Netlify.
+3. Add your OpenAI API key in Netlify:
+   - Go to **Site settings → Environment variables**
+   - Add: `OPENAI_API_KEY=sk-xxxxx`
+4. Deploy 🎉
 
-## Structure
-```
-g-dawg-translator/
-├── index.html
-├── README.md
-├── netlify.toml
-└── netlify/functions/translate.js
-```
+## ✨ Features
+- Translates English ↔ Thai with multiple styles
+- Gender toggle for correct Thai politeness (ครับ/ค่ะ)
+- Copy & Speak buttons for each translation
+
+Enjoy!

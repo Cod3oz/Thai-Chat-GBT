@@ -4,135 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>G-Dawg Translator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9fafb; color: #111; }
+    .card { background: #fff; padding: 15px; margin: 10px 0; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    button { margin-left: 10px; }
+  </style>
 </head>
-<body class="bg-zinc-100 min-h-screen flex items-center justify-center p-6">
-  <div id="root" class="w-full max-w-5xl"></div>
+<body>
+  <h1>G-Dawg Translator</h1>
+  <textarea id="inputText" rows="3" cols="60" placeholder="Enter text..."></textarea><br>
+  <label>Direction:</label>
+  <select id="direction">
+    <option value="auto">Auto</option>
+    <option value="en-th">English → Thai</option>
+    <option value="th-en">Thai → English</option>
+  </select>
+  <label>Speaker:</label>
+  <select id="gender">
+    <option value="auto">Auto</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select>
+  <button onclick="translate()">Translate</button>
 
-  <script type="text/babel">
+  <div id="results"></div>
 
-    const { useState } = React;
-
-    function App() {
-      const [input, setInput] = useState("");
-      const [translations, setTranslations] = useState(null);
-      const [direction, setDirection] = useState("auto");
-      const [gender, setGender] = useState("auto");
-      const [loading, setLoading] = useState(false);
-
-      async function handleTranslate() {
-        if (!input.trim()) return;
-        setLoading(true);
-        setTranslations(null);
-        try {
-          const res = await fetch("/.netlify/functions/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: input, direction, gender })
-          });
-          const data = await res.json();
-          setTranslations(data);
-        } catch (err) {
-          console.error(err);
-          alert("Error: " + err.message);
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      function speak(text, langHint) {
-        if (!window.speechSynthesis) return alert("Speech synthesis not supported");
-        const utter = new SpeechSynthesisUtterance(text);
-        const voices = window.speechSynthesis.getVoices();
-        if (langHint === "th") {
-          const thaiVoice = voices.find(v => v.lang.startsWith("th"));
-          if (thaiVoice) utter.voice = thaiVoice;
-        } else if (langHint === "en") {
-          const enVoice = voices.find(v => v.lang.startsWith("en"));
-          if (enVoice) utter.voice = enVoice;
-        }
-        window.speechSynthesis.speak(utter);
-      }
-
-      function copyText(text) {
-        navigator.clipboard.writeText(text);
-        alert("Copied!");
-      }
-
-      return (
-        <div className="bg-white shadow-2xl rounded-2xl p-6 w-full">
-          <h1 className="text-2xl font-bold mb-4 text-center">G-Dawg Translator</h1>
-
-          <textarea
-            className="w-full border rounded-lg p-3 mb-3"
-            rows="4"
-            placeholder="Type here..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          ></textarea>
-
-          <div className="flex gap-3 mb-3">
-            <select
-              className="border rounded-lg px-2 py-1"
-              value={direction}
-              onChange={(e) => setDirection(e.target.value)}
-            >
-              <option value="auto">Auto Detect</option>
-              <option value="en-th">English → Thai</option>
-              <option value="th-en">Thai → English</option>
-            </select>
-
-            <select
-              className="border rounded-lg px-2 py-1"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-            >
-              <option value="auto">Speaker: Auto</option>
-              <option value="male">Speaker: Male</option>
-              <option value="female">Speaker: Female</option>
-            </select>
-
-            <button
-              onClick={handleTranslate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              disabled={loading}
-            >
-              {loading ? "Translating..." : "Translate"}
-            </button>
-          </div>
-
-          {translations && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              {Object.entries(translations).map(([mode, text]) => (
-                <div key={mode} className="border rounded-lg p-3 shadow">
-                  <h2 className="font-semibold mb-2 capitalize">{mode}</h2>
-                  <p className="mb-3">{text}</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => copyText(text)}
-                      className="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
-                    >
-                      Copy
-                    </button>
-                    <button
-                      onClick={() => speak(text, direction === "th-en" ? "en" : "th")}
-                      className="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
-                    >
-                      Speak
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      );
+  <script>
+    async function translate() {
+      const text = document.getElementById('inputText').value;
+      const direction = document.getElementById('direction').value;
+      const gender = document.getElementById('gender').value;
+      const res = await fetch('/.netlify/functions/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, direction, gender })
+      });
+      const data = await res.json();
+      const results = document.getElementById('results');
+      results.innerHTML = '';
+      Object.entries(data).forEach(([key, val]) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<b>${key.toUpperCase()}</b>: ${val} 
+          <button onclick="copyText('${val}')">Copy</button>
+          <button onclick="speakText('${val}')">Speak</button>`;
+        results.appendChild(card);
+      });
     }
-
-    ReactDOM.render(<App />, document.getElementById("root"));
+    function copyText(text) {
+      navigator.clipboard.writeText(text);
+      alert('Copied: ' + text);
+    }
+    function speakText(text) {
+      const msg = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(msg);
+    }
   </script>
 </body>
 </html>
